@@ -12,27 +12,18 @@
 <script>
 import { ref, watch } from "vue";
 import eventApi from "@/api/event.js";
+import usePromise from "@/composables/usePromise.js";
+
 export default {
   setup() {
     const searchInput = ref("");
-    const results = ref(null);
-    const loading = ref(false);
-    const error = ref(null);
-    async function loadData(search) {
-      loading.value = true;
-      error.value = null;
-      results.value = null;
-      try {
-        results.value = await eventApi.getEventCount(search.value);
-      } catch (err) {
-        error.value = err;
-      } finally {
-        loading.value = false;
-      }
-    }
+    const { results, loading, error, createPromise } = usePromise((search) =>
+      eventApi.getEventCount(search.value)
+    );
+
     watch(searchInput, () => {
       if (searchInput.value !== "") {
-        loadData(searchInput);
+        createPromise(searchInput);
       } else {
         results.value = null;
       }
