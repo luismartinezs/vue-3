@@ -17,6 +17,20 @@ function reactive (target) {
   return new Proxy(target, handler)
 }
 
+function ref (raw) {
+  const r = {
+    get value () {
+      track(r, 'value')
+      return raw
+    },
+    set value (newVal) {
+      raw = newVal
+      trigger(r, 'value')
+    }
+  }
+  return r
+}
+
 const targetMap = new WeakMap()
 let activeEffect = null
 
@@ -51,30 +65,28 @@ function effect (eff) {
   activeEffect = null
 }
 
-//  In action
-
-let product = reactive({ price: 5, qty: 2 })
-let salePrice = 0
+let product = reactive({ price: 5, quantity: 2 })
+let salePrice = ref(0)
 let total = 0
 
 effect(() => {
-  total = product.price * product.qty
+  salePrice.value = product.price * 0.9
 })
 
 effect(() => {
-  salePrice = product.price * 0.9
+  total = salePrice.value * product.quantity
 })
 
-log(product, total, salePrice)
+log()
 
-product.qty = 4
+product.quantity = 3
 
-log(product, total, salePrice)
+log()
 
 product.price = 10
 
-log(product, total, salePrice)
+log()
 
-function log (...args) {
-  console.log(...args)
+function log () {
+  console.log(product, salePrice.value, total)
 }
