@@ -1,34 +1,27 @@
 <template>
-  <div>
-    Search for
-    <input v-model="searchInput" />
-    <div>
-      <p>Loading: {{ loading }}</p>
-      <p>Error: {{ error }}</p>
-      <p>Number of events: {{ results }}</p>
-    </div>
-  </div>
+  <EventCount />
+  <div v-if="error">Oops... {{error}}</div>
+  <Suspense v-else>
+    <template #default>
+      <BaseEvent />
+    </template>
+    <template #fallback>Loading...</template>
+  </Suspense>
 </template>
 <script>
-import { ref, watch } from "vue";
-import eventApi from "@/api/event.js";
-import usePromise from "@/composables/usePromise.js";
+import EventCount from "@/components/EventCount.vue";
+import BaseEvent from "@/components/BaseEvent.vue";
+import { ref, onErrorCaptured } from "vue";
 
 export default {
+  components: { EventCount, BaseEvent },
   setup() {
-    const searchInput = ref("");
-    const { results, loading, error, createPromise } = usePromise((search) =>
-      eventApi.getEventCount(search.value)
-    );
-
-    watch(searchInput, () => {
-      if (searchInput.value !== "") {
-        createPromise(searchInput);
-      } else {
-        results.value = null;
-      }
+    const error = ref(null);
+    onErrorCaptured((e) => {
+      error.value = e;
+      return true;
     });
-    return { searchInput, results, loading, error };
+    return { error };
   },
 };
 </script>
