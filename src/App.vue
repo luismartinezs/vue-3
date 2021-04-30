@@ -1,6 +1,7 @@
 <template>
   <div>
-    Search for <input v-model="searchInput" /> 
+    Search for
+    <input v-model="searchInput" />
     <div>
       <p>Loading: {{ loading }}</p>
       <p>Error: {{ error }}</p>
@@ -9,7 +10,7 @@
   </div>
 </template>
 <script>
-import { ref, watch } from "@vue/composition-api";
+import { ref, watch } from "vue";
 import eventApi from "@/api/event.js";
 export default {
   setup() {
@@ -37,6 +38,6 @@ export default {
       }
     });
     return { searchInput, results, loading, error };
-  }
+  },
 };
 </script>
