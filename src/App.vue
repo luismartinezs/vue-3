@@ -7,14 +7,16 @@
     </template>
     <template #fallback>Loading...</template>
   </Suspense>
+  <BaseTeleport />
 </template>
 <script>
 import EventCount from "@/components/EventCount.vue";
 import BaseEvent from "@/components/BaseEvent.vue";
+import BaseTeleport from "@/components/BaseTeleport.vue";
 import { ref, onErrorCaptured } from "vue";
 
 export default {
-  components: { EventCount, BaseEvent },
+  components: { EventCount, BaseEvent, BaseTeleport },
   setup() {
     const error = ref(null);
     onErrorCaptured((e) => {
